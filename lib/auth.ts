@@ -1,5 +1,5 @@
 import { betterAuth } from "better-auth";
-import { postgres } from "postgres";
+import postgres from "postgres";
 
 const connectionString = process.env.POSTGRES_URL;
 
