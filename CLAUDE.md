@@ -32,13 +32,33 @@ pnpm lint             # Run ESLint
 - **TypeScript**: ES2017 target with strict mode enabled
 - **Fonts**: Geist Sans and Geist Mono (optimized via `next/font`)
 - **Path Aliases**: `@/*` maps to project root
+- **Database**: Neon Postgres (serverless PostgreSQL)
+- **Authentication**: Better-Auth with email/password support
+- **Deployment**: Vercel with automatic GitHub integration
+
+## Environment Setup
+
+Required environment variables (already configured in Vercel):
+- `POSTGRES_URL`: Neon database connection string (pooled)
+- `POSTGRES_URL_NON_POOLING`: Direct connection for migrations
+- `BETTER_AUTH_SECRET`: Secret key for Better-Auth (generate with `openssl rand -base64 32`)
+- `BETTER_AUTH_URL`: Application URL (http://localhost:3000 for dev)
+
+To pull environment variables locally:
+```bash
+vercel env pull .env.local
+```
 
 ## Architecture & Key Concepts
 
-### Planned External Integrations
-- **Supabase**: Database and real-time updates for products, transactions, vouchers, kassa_shifts, recipe_ingredients, profiles
-- **SumUp API**: Card payment processing with payment verification workflow
-- **@zxing/browser**: QR code scanning for voucher system
+### External Integrations
+- **Neon Postgres**: Serverless PostgreSQL database with connection pooling
+- **Better-Auth**: Authentication system with session management
+  - Tables: `user`, `session`, `account`, `verification`
+  - Auth routes: `/api/auth/*` (handled by Better-Auth)
+  - Client helpers: `lib/auth-client.ts` (signIn, signUp, signOut, useSession)
+- **SumUp API**: Card payment processing with payment verification workflow (to be implemented)
+- **@zxing/browser**: QR code scanning for voucher system (to be implemented)
 
 ### Core Business Logic Areas
 
@@ -83,15 +103,21 @@ pnpm lint             # Run ESLint
 - Floating cart button on mobile
 - Smooth scroll behaviors
 
-## Database Schema (Supabase)
+## Database Schema
 
-Key tables to implement:
+### Authentication Tables (Already Created)
+- `user`: User accounts with email and profile info
+- `session`: Active user sessions
+- `account`: OAuth provider accounts
+- `verification`: Email verification tokens
+
+### Application Tables (To Be Implemented)
 - `products`: Catalog with stock levels and categories
 - `transactions`: Sales records with payment method, verification status, SumUp references
 - `vouchers`: Digital codes with validation state
 - `kassa_shifts`: Open/close tracking with cash amounts
 - `recipe_ingredients`: Cocktail recipes for ingredient-based stock calculation
-- `profiles`: User/staff information
+- `profiles`: Extended user/staff information and roles
 
 ## Code Organization
 
